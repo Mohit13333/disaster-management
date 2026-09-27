@@ -1,0 +1,20 @@
+{
+  "name": "disaster-response-platform",
+  "version": "1.0.0",
+  "description": "Disaster Response Coordination Platform - Monorepo",
+  "private": true,
+  "scripts": {
+    "dev:backend": "npm run dev --workspace=backend",
+    "dev:frontend": "npm run dev --workspace=frontend",
+    "test": "npm run test --workspace=backend",
+    "seed": "npm run seed --workspace=backend",
+    "build": "npm run build --workspace=backend && npm run build --workspace=frontend",
+    "build:backend": "npm run build --workspace=backend",
+    "build:frontend": "npm run build --workspace=frontend",
+    "install:all": "npm install --workspace=backend --workspace=frontend"
+  },
+  "workspaces": [
+    "backend",
+    "frontend"
+  ]
+}

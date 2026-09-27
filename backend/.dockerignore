@@ -1,0 +1,8 @@
+node_modules
+dist
+.env
+*.log
+mongo-data
+coverage
+.nyc_output
+*.tsbuildinfo

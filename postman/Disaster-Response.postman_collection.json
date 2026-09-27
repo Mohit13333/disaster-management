@@ -1,0 +1,222 @@
+{
+  "info": {
+    "name": "Disaster Response Platform",
+    "_postman_id": "disaster-response-2024",
+    "description": "API collection for the Disaster Response Coordination Platform",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000", "type": "string" },
+    { "key": "token", "value": "", "type": "string" },
+    { "key": "disasterId", "value": "", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.success && res.data.token) {",
+                  "  pm.collectionVariables.set('token', res.data.token);",
+                  "  console.log('Token set:', res.data.token.substring(0, 20) + '...');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"admin123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"] }
+          }
+        },
+        {
+          "name": "Login (Contributor)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"contributor@example.com\",\n  \"password\": \"contributor123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"] }
+          }
+        },
+        {
+          "name": "Get Me",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/api/auth/me", "host": ["{{baseUrl}}"], "path": ["api", "auth", "me"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Disasters",
+      "item": [
+        {
+          "name": "Create Disaster",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.success && res.data._id) {",
+                  "  pm.collectionVariables.set('disasterId', res.data._id);",
+                  "  console.log('DisasterId set:', res.data._id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Heavy Flooding in Manhattan\",\n  \"description\": \"Heavy flooding has affected Manhattan, NYC. Water levels are rising rapidly in Lower Manhattan and residents are urged to evacuate.\",\n  \"tags\": [\"flood\", \"emergency\", \"evacuation\"],\n  \"status\": \"ACTIVE\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/disasters", "host": ["{{baseUrl}}"], "path": ["api", "disasters"] }
+          }
+        },
+        {
+          "name": "Get All Disasters",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/api/disasters", "host": ["{{baseUrl}}"], "path": ["api", "disasters"] }
+          }
+        },
+        {
+          "name": "Get Disasters - Filter by Tag",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/disasters?tag=flood",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "disasters"],
+              "query": [{ "key": "tag", "value": "flood" }]
+            }
+          }
+        },
+        {
+          "name": "Get Disasters - Filter by Status",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/disasters?status=ACTIVE",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "disasters"],
+              "query": [{ "key": "status", "value": "ACTIVE" }]
+            }
+          }
+        },
+        {
+          "name": "Get Disaster by ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/api/disasters/{{disasterId}}", "host": ["{{baseUrl}}"], "path": ["api", "disasters", "{{disasterId}}"] }
+          }
+        },
+        {
+          "name": "Update Disaster",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"RESOLVED\",\n  \"tags\": [\"flood\", \"emergency\", \"resolved\"]\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/disasters/{{disasterId}}", "host": ["{{baseUrl}}"], "path": ["api", "disasters", "{{disasterId}}"] }
+          }
+        },
+        {
+          "name": "Delete Disaster (Admin only)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/api/disasters/{{disasterId}}", "host": ["{{baseUrl}}"], "path": ["api", "disasters", "{{disasterId}}"] }
+          }
+        },
+        {
+          "name": "Get Stats",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/api/disasters/stats", "host": ["{{baseUrl}}"], "path": ["api", "disasters", "stats"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Resources",
+      "item": [
+        {
+          "name": "Get Nearby Resources (Manhattan)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/disasters/{{disasterId}}/resources?lat=40.7128&lng=-74.0060&radius=5",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "disasters", "{{disasterId}}", "resources"],
+              "query": [
+                { "key": "lat", "value": "40.7128" },
+                { "key": "lng", "value": "-74.0060" },
+                { "key": "radius", "value": "5" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Community Reports",
+      "item": [
+        {
+          "name": "Get Community Reports",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/api/disasters/{{disasterId}}/reports", "host": ["{{baseUrl}}"], "path": ["api", "disasters", "{{disasterId}}", "reports"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/health", "host": ["{{baseUrl}}"], "path": ["api", "health"] }
+          }
+        }
+      ]
+    }
+  ]
+}
